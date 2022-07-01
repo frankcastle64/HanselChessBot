@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HanselChessBOT.ConsoleApp", "HanselChessBOT.ConsoleApp\HanselChessBOT.ConsoleApp.csproj", "{D76DCC95-92D6-4AE4-8607-5D12088C4973}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HanselChessBOT.UnitTests", "HanselChessBOT.UnitTests\HanselChessBOT.UnitTests.csproj", "{62D87491-6077-4005-88A0-EE9ABE28DD2F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D76DCC95-92D6-4AE4-8607-5D12088C4973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D76DCC95-92D6-4AE4-8607-5D12088C4973}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D76DCC95-92D6-4AE4-8607-5D12088C4973}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D76DCC95-92D6-4AE4-8607-5D12088C4973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62D87491-6077-4005-88A0-EE9ABE28DD2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62D87491-6077-4005-88A0-EE9ABE28DD2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62D87491-6077-4005-88A0-EE9ABE28DD2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62D87491-6077-4005-88A0-EE9ABE28DD2F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFC66BE3-C09E-4784-A2AA-85D689AC89D9}
+	EndGlobalSection
+EndGlobal
