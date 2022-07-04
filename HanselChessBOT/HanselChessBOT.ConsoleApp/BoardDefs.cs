@@ -55,6 +55,11 @@ namespace HanselChessBOT.ConsoleApp
             // Reset the turn to white.
             CurrentStateInformation.turn = true;
 
+            // Allocate jagged-array for move list.
+            for (int ply = 0; ply < MoveGeneration.MAX_PLY; ply++)
+            {
+                MoveGeneration.moveList[ply] = new Move[MoveGeneration.MAX_MOVES_PER_PLY];
+            }
         }
         public static void InitOnce()
         {

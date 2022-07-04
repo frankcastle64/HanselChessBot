@@ -16,11 +16,11 @@ namespace HanselChessBOT.ConsoleApp
 
     public struct MoveGeneration
     {
-        public static int MAX_PLY = 64;
-        public const int MAX_MOVES_PER_PLY = 256;
+        public static int MAX_PLY = 10;
+        public const int MAX_MOVES_PER_PLY = 255;
         public static int[] MOVES_AT_PLY = new int[MAX_MOVES_PER_PLY];
 
-        public static readonly Move[] moveList = new Move[MAX_PLY * MAX_MOVES_PER_PLY];
+        public static readonly Move[][] moveList = new Move[MAX_PLY][];
 
         public static void GenerateMoves(int ply, bool turn, int n)
         {
@@ -98,13 +98,13 @@ namespace HanselChessBOT.ConsoleApp
             while (singlePawnPushToPromotion > 0)
             {
                 int sq = Utilities.BitScanForward(singlePawnPushToPromotion);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WN);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WN);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WB);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WB);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WR);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WR);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WQ);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, Piece.NO_PIECE, Piece.WQ);
                 n++;
 
                 singlePawnPushToPromotion &= singlePawnPushToPromotion - 1;
@@ -113,7 +113,7 @@ namespace HanselChessBOT.ConsoleApp
             while (doublePawnPush > 0)
             {
                 int sq = Utilities.BitScanForward(doublePawnPush);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + (2 * DirectionMasks.South), sq, CommonDefs.MOVETYPE_ORDINARY, Piece.WP, Piece.NO_PIECE, Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq + (2 * DirectionMasks.South), sq, CommonDefs.MOVETYPE_ORDINARY, Piece.WP, Piece.NO_PIECE, Piece.NO_PIECE);
                 n++;
                 doublePawnPush &= doublePawnPush - 1;
             }
@@ -121,11 +121,10 @@ namespace HanselChessBOT.ConsoleApp
             while (singlePawnPushNonPromotion > 0)
             {
                 int sq = Utilities.BitScanForward(singlePawnPushNonPromotion);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_ORDINARY, Piece.WP, Piece.NO_PIECE, Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.South, sq, CommonDefs.MOVETYPE_ORDINARY, Piece.WP, Piece.NO_PIECE, Piece.NO_PIECE);
                 n++;
                 singlePawnPushNonPromotion &= singlePawnPushNonPromotion - 1;
             }
-
 
             return n;
         }
@@ -141,13 +140,13 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsPromotionsNorthEast > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsPromotionsNorthEast);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WN);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WN);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WB);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WB);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WR);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WR);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WQ);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WQ);
                 n++;
 
                 pawnTargetsPromotionsNorthEast &= pawnTargetsPromotionsNorthEast - 1;
@@ -158,7 +157,7 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsNonPromotionsNorthEast > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsNonPromotionsNorthEast);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.WP, BoardDefs.Board[sq], Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.WP, BoardDefs.Board[sq], Piece.NO_PIECE);
                 n++;
                 pawnTargetsNonPromotionsNorthEast &= pawnTargetsNonPromotionsNorthEast - 1;
             }
@@ -172,13 +171,13 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsPromotionsNorthWest > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsPromotionsNorthWest);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WN);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WN);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WB);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WB);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WR);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WR);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WQ);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.WP, BoardDefs.Board[sq], Piece.WQ);
                 n++;
 
                 pawnTargetsPromotionsNorthWest &= pawnTargetsPromotionsNorthWest - 1;
@@ -189,7 +188,7 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsNonPromotionsNorthWest > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsNonPromotionsNorthWest);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.WP, BoardDefs.Board[sq], Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq - DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.WP, BoardDefs.Board[sq], Piece.NO_PIECE);
                 n++;
                 pawnTargetsNonPromotionsNorthWest &= pawnTargetsNonPromotionsNorthWest - 1;
             }
@@ -201,7 +200,7 @@ namespace HanselChessBOT.ConsoleApp
                 while (enpassant_captures > 0)
                 {
                     int sq = Utilities.BitScanForward(enpassant_captures);
-                    moveList[MAX_PLY * ply + n].move = EncodeMove(sq, BoardDefs.GameStateInformationPerPly[ply].current_enpassant_sq, CommonDefs.MOVETYPE_ENPASSANT, Piece.WP, Piece.NO_PIECE, Piece.NO_PIECE);
+                    moveList[ply][n].move = EncodeMove(sq, BoardDefs.GameStateInformationPerPly[ply].current_enpassant_sq, CommonDefs.MOVETYPE_ENPASSANT, Piece.WP, Piece.NO_PIECE, Piece.NO_PIECE);
                     n++;
                     enpassant_captures &= enpassant_captures - 1;
                 }
@@ -226,13 +225,13 @@ namespace HanselChessBOT.ConsoleApp
             while (singlePawnPushToPromotion > 0)
             {
                 int sq = Utilities.BitScanForward(singlePawnPushToPromotion);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BN);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BN);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BB);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BB);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BR);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BR);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BQ);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, Piece.NO_PIECE, Piece.BQ);
                 n++;
 
                 singlePawnPushToPromotion &= singlePawnPushToPromotion - 1;
@@ -241,7 +240,7 @@ namespace HanselChessBOT.ConsoleApp
             while (doublePawnPush > 0)
             {
                 int sq = Utilities.BitScanForward(doublePawnPush);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + (2 * DirectionMasks.North), sq, CommonDefs.MOVETYPE_ORDINARY, Piece.BP, Piece.NO_PIECE, Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq + (2 * DirectionMasks.North), sq, CommonDefs.MOVETYPE_ORDINARY, Piece.BP, Piece.NO_PIECE, Piece.NO_PIECE);
                 n++;
                 doublePawnPush &= doublePawnPush - 1;
             }
@@ -249,7 +248,7 @@ namespace HanselChessBOT.ConsoleApp
             while (singlePawnPushNonPromotion > 0)
             {
                 int sq = Utilities.BitScanForward(singlePawnPushNonPromotion);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_ORDINARY, Piece.BP, Piece.NO_PIECE, Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.North, sq, CommonDefs.MOVETYPE_ORDINARY, Piece.BP, Piece.NO_PIECE, Piece.NO_PIECE);
                 n++;
                 singlePawnPushNonPromotion &= singlePawnPushNonPromotion - 1;
             }
@@ -270,13 +269,13 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsPromotionsNorthWest > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsPromotionsNorthWest);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BN);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BN);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BB);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BB);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BR);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BR);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BQ);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BQ);
                 n++;
 
                 pawnTargetsPromotionsNorthWest &= pawnTargetsPromotionsNorthWest - 1;
@@ -287,7 +286,7 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsNonPromotionsNorthWest > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsNonPromotionsNorthWest);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.BP, BoardDefs.Board[sq], Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthWest, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.BP, BoardDefs.Board[sq], Piece.NO_PIECE);
                 n++;
                 pawnTargetsNonPromotionsNorthWest &= pawnTargetsNonPromotionsNorthWest - 1;
             }
@@ -301,13 +300,13 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsPromotionsNorthEast > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsPromotionsNorthEast);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BN);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BN);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BB);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BB);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BR);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BR);
                 n++;
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BQ);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_PROMOTION, Piece.BP, BoardDefs.Board[sq], Piece.BQ);
                 n++;
 
                 pawnTargetsPromotionsNorthEast &= pawnTargetsPromotionsNorthEast - 1;
@@ -318,7 +317,7 @@ namespace HanselChessBOT.ConsoleApp
             while (pawnTargetsNonPromotionsNorthEast > 0)
             {
                 int sq = Utilities.BitScanForward(pawnTargetsNonPromotionsNorthEast);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.BP, BoardDefs.Board[sq], Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(sq + DirectionMasks.NorthEast, sq, CommonDefs.MOVETYPE_CAPTURE, Piece.BP, BoardDefs.Board[sq], Piece.NO_PIECE);
                 n++;
                 pawnTargetsNonPromotionsNorthEast &= pawnTargetsNonPromotionsNorthEast - 1;
             }
@@ -330,7 +329,7 @@ namespace HanselChessBOT.ConsoleApp
                 while (enpassant_captures > 0)
                 {
                     int sq = Utilities.BitScanForward(enpassant_captures);
-                    moveList[MAX_PLY * ply + n].move = EncodeMove(sq, BoardDefs.GameStateInformationPerPly[ply].current_enpassant_sq, CommonDefs.MOVETYPE_ENPASSANT, Piece.BP, Piece.NO_PIECE, Piece.NO_PIECE);
+                    moveList[ply][n].move = EncodeMove(sq, BoardDefs.GameStateInformationPerPly[ply].current_enpassant_sq, CommonDefs.MOVETYPE_ENPASSANT, Piece.BP, Piece.NO_PIECE, Piece.NO_PIECE);
                     n++;
                     enpassant_captures &= enpassant_captures - 1;
                 }
@@ -343,8 +342,7 @@ namespace HanselChessBOT.ConsoleApp
         {
             int from, to;
             ulong bb = Piece.Pieces_BB[piece];
-            int i;
-
+ 
             while (bb > 0)
             {
                 from = Utilities.BitScanForward(bb);
@@ -352,7 +350,7 @@ namespace HanselChessBOT.ConsoleApp
                 while (attacks > 0)
                 {
                     to = Utilities.BitScanForward(attacks);
-                    moveList[MAX_PLY * ply + n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
+                    moveList[ply][n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
                     n++;
                     attacks &= attacks - 1;
                 }
@@ -366,20 +364,16 @@ namespace HanselChessBOT.ConsoleApp
         {
             int from, to;
             ulong bb = Piece.Pieces_BB[piece];
-            int i;
-
-
+            
             from = Utilities.BitScanForward(bb);
             ulong attacks = AttackMaps.KING_ATTACKS[from] & targetBitboard;
             while (attacks > 0)
             {
                 to = Utilities.BitScanForward(attacks);
-                moveList[MAX_PLY * ply + n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
+                moveList[ply][n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
                 n++;
                 attacks &= attacks - 1;
             }
-
-
 
             return n;
         }
@@ -394,14 +388,14 @@ namespace HanselChessBOT.ConsoleApp
                     bool isF1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.f1)) > 0;
                     bool isG1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.g1)) > 0;
 
-                    // Check if f1 and g1 are attacked.
+                    // Check if e1, f1 and g1 are attacked.
                     bool e1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
                     bool f1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.f1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.f1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
                     bool g1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.g1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.g1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
 
                     if (isF1Empty && isG1Empty && !e1IsAttacked && !f1IsAttacked && !g1IsAttacked)
                     {
-                        moveList[MAX_PLY * ply + n].move = EncodeMove(Square.e1, Square.g1, CommonDefs.MOVETYPE_KING_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
+                        moveList[ply][n].move = EncodeMove(Square.e1, Square.g1, CommonDefs.MOVETYPE_KING_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
                         n++;
                     }
 
@@ -414,14 +408,14 @@ namespace HanselChessBOT.ConsoleApp
                     bool isC1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.c1)) > 0;
                     bool isD1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.d1)) > 0;
 
-                    // Check if f1 and g1 are attacked.
+                    // Check if e1, d1 and c1 are attacked.
                     bool e1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
                     bool d1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.d1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.d1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
                     bool c1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.c1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.c1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
 
                     if (isB1Empty && isC1Empty && isD1Empty && !e1IsAttacked && !d1IsAttacked && !c1IsAttacked)
                     {
-                        moveList[MAX_PLY * ply + n].move = EncodeMove(Square.e1, Square.c1, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
+                        moveList[ply][n].move = EncodeMove(Square.e1, Square.c1, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
                         n++;
                     }
                 }
@@ -431,18 +425,18 @@ namespace HanselChessBOT.ConsoleApp
             {
                 if ((BoardDefs.GameStateInformationPerPly[ply].current_black_castle_rights & 4) != 0)
                 {
-                    // Check if f1 and g1 are empty.
+                    // Check if f8 and g8 are empty.
                     bool isF8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.f8)) > 0;
                     bool isG8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.g8)) > 0;
 
-                    // Check if f1 and g1 are attacked.
+                    // Check if e8, f8 and g8 are attacked.
                     bool e8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
                     bool f8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.f8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.f8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
                     bool g8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.g8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.g8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
 
                     if (isF8Empty && isG8Empty && !e8IsAttacked && !f8IsAttacked && !g8IsAttacked)
                     {
-                        moveList[MAX_PLY * ply + n].move = EncodeMove(Square.e8, Square.g8, CommonDefs.MOVETYPE_KING_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
+                        moveList[ply][n].move = EncodeMove(Square.e8, Square.g8, CommonDefs.MOVETYPE_KING_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
                         n++;
                     }
 
@@ -451,19 +445,19 @@ namespace HanselChessBOT.ConsoleApp
 
                 if ((BoardDefs.GameStateInformationPerPly[ply].current_black_castle_rights & 8) != 0)
                 {
-                    // Check if b1 and c1 and d1 are empty.
+                    // Check if b8 and c8 and d8 are empty.
                     bool isB8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.b8)) > 0;
                     bool isC8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.c8)) > 0;
                     bool isD8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.d8)) > 0;
 
-                    // Check if f1 and g1 are attacked.
+                    // Check if e8, d8 and c8 are attacked.
                     bool e8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
                     bool d8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.d8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.d8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
                     bool c8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.c8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.c8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
 
                     if (isB8Empty && isC8Empty && isD8Empty && !e8IsAttacked && !d8IsAttacked && !c8IsAttacked)
                     {
-                        moveList[MAX_PLY * ply + n].move = EncodeMove(Square.e8, Square.c8, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
+                        moveList[ply][n].move = EncodeMove(Square.e8, Square.c8, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
                         n++;
                     }
                 }
@@ -491,7 +485,7 @@ namespace HanselChessBOT.ConsoleApp
                 {
                     int to = Utilities.BitScanForward(moves);
 
-                    moveList[MAX_PLY * ply + n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
+                    moveList[ply][n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
                     n++;
                     moves = moves & moves - 1;
 
@@ -521,7 +515,7 @@ namespace HanselChessBOT.ConsoleApp
                 {
                     int to = Utilities.BitScanForward(moves);
 
-                    moveList[MAX_PLY * ply + n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
+                    moveList[ply][n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
                     n++;
                     moves = moves & moves - 1;
 
@@ -559,7 +553,7 @@ namespace HanselChessBOT.ConsoleApp
                 {
                     int to = Utilities.BitScanForward(movesQueen);
 
-                    moveList[MAX_PLY * ply + n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
+                    moveList[ply][n].move = EncodeMove(from, to, moveType, piece, BoardDefs.Board[to], Piece.NO_PIECE);
                     n++;
                     movesQueen = movesQueen & movesQueen - 1;
 
@@ -630,16 +624,6 @@ namespace HanselChessBOT.ConsoleApp
                 Piece.Pieces_BB[promotedPiece] ^= (1UL << sqTo);
                 Piece.Pieces_BB[pieceTo] ^= (1UL << sqTo);
 
-
-                //// Update the piece types and pieces by color bit boards.
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceTo]] ^= (1UL << sqTo);
-
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceTo]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceFrom]] ^= (1UL << sqFrom);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[promotedPiece]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << sqFrom);
-
             }
 
             else if (moveType == CommonDefs.MOVETYPE_KING_CASTLE)
@@ -660,14 +644,6 @@ namespace HanselChessBOT.ConsoleApp
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_white_castle_rights = 0;
 
-                    //// Update the piece types and pieces by color bit boards.
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.g1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WR]] ^= (1UL << Square.h1) ^ (1UL << Square.f1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.h1) ^ (1UL << Square.g1) ^ (1UL << Square.f1);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.g1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WR]] ^= (1UL << Square.h1) ^ (1UL << Square.f1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.h1) ^ (1UL << Square.g1) ^ (1UL << Square.f1);
                 }
                 else
                 {
@@ -685,14 +661,6 @@ namespace HanselChessBOT.ConsoleApp
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_black_castle_rights = 0;
 
-                    //// Update the piece types and pieces by color bit boards.
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.g8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BR]] ^= (1UL << Square.h8) ^ (1UL << Square.f8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.h8) ^ (1UL << Square.g8) ^ (1UL << Square.f8);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.g8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BR]] ^= (1UL << Square.h8) ^ (1UL << Square.f8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.h8) ^ (1UL << Square.g8) ^ (1UL << Square.f8);
                 }
 
 
@@ -715,14 +683,6 @@ namespace HanselChessBOT.ConsoleApp
 
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_white_castle_rights = 0;
-
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.c1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WR]] ^= (1UL << Square.a1) ^ (1UL << Square.d1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.a1) ^ (1UL << Square.c1) ^ (1UL << Square.d1);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.c1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WR]] ^= (1UL << Square.a1) ^ (1UL << Square.d1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.a1) ^ (1UL << Square.c1) ^ (1UL << Square.d1);
                 }
                 else
                 {
@@ -739,17 +699,7 @@ namespace HanselChessBOT.ConsoleApp
 
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_black_castle_rights = 0;
-
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.c8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BR]] ^= (1UL << Square.a8) ^ (1UL << Square.d8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.a8) ^ (1UL << Square.c8) ^ (1UL << Square.d8);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.c8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BR]] ^= (1UL << Square.a8) ^ (1UL << Square.d8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.a8) ^ (1UL << Square.c8) ^ (1UL << Square.d8);
-
                 }
-
 
             }
 
@@ -763,15 +713,6 @@ namespace HanselChessBOT.ConsoleApp
                 Piece.Pieces_BB[pieceFrom] ^= (1UL << sqFrom) ^ (1UL << sqTo);
                 Piece.Pieces_BB[pieceTo] ^= (1UL << sqTo);
 
-
-                //// Update the piece types and pieces by color bit boards.
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceTo]] ^= (1UL << sqTo);
-
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceTo]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << sqFrom);
-
                 // if the pawn is white, then the captured piece is black pawn, else the captured piece is white pawn.
                 if (pieceFrom == Piece.WP)
                 {
@@ -779,24 +720,12 @@ namespace HanselChessBOT.ConsoleApp
                     BoardDefs.Board[sqTo + DirectionMasks.South] = Piece.NO_PIECE;
                     Piece.Pieces_BB[Piece.BP] ^= (1UL << (sqTo + DirectionMasks.South));
 
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BP]] ^= (1UL << (sqTo + DirectionMasks.South));
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.South));
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BP]] ^= (1UL << (sqTo + DirectionMasks.South));
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.South));
-
                 }
                 else
                 {
                     Piece.Pieces_BB[Piece.NO_PIECE] ^= (1UL << (sqTo + DirectionMasks.North));
                     BoardDefs.Board[sqTo + DirectionMasks.North] = Piece.NO_PIECE;
                     Piece.Pieces_BB[Piece.WP] ^= (1UL << (sqTo + DirectionMasks.North));
-
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WP]] ^= (1UL << (sqTo + DirectionMasks.North));
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.North));
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WP]] ^= (1UL << (sqTo + DirectionMasks.North));
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.North));
                 }
 
             }
@@ -836,31 +765,22 @@ namespace HanselChessBOT.ConsoleApp
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_black_castle_rights = 0;
                 }
 
-                // Update the piece types and pieces by color bit boards.
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceTo]] ^= (1UL << sqTo);
-
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceTo]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << sqFrom);
-
-
             }
 
             // If the rook is moving, check and update the castle rights.
-            if ((pieceFrom == Piece.WR && sqFrom == Square.h1) || (pieceTo == Piece.WR && sqTo == Square.h1))
+            if ((sqFrom == Square.h1) || (sqTo == Square.h1))
             {
                 BoardDefs.GameStateInformationPerPly[ply + 1].current_white_castle_rights &= ~1;
             }
-            if ((pieceFrom == Piece.WR && sqFrom == Square.a1) || (pieceTo == Piece.WR && sqTo == Square.a1))
+            if ((sqFrom == Square.a1) || (sqTo == Square.a1))
             {
                 BoardDefs.GameStateInformationPerPly[ply + 1].current_white_castle_rights &= ~2;
             }
-            if ((pieceFrom == Piece.BR && sqFrom == Square.h8) || (pieceTo == Piece.BR && sqTo == Square.h8))
+            if ((sqFrom == Square.h8) || (sqTo == Square.h8))
             {
                 BoardDefs.GameStateInformationPerPly[ply + 1].current_black_castle_rights &= ~4;
             }
-            if ((pieceFrom == Piece.BR && sqFrom == Square.a8) || (pieceTo == Piece.BR && sqTo == Square.a8))
+            if ((sqFrom == Square.a8) || (sqTo == Square.a8))
             {
                 BoardDefs.GameStateInformationPerPly[ply + 1].current_black_castle_rights &= ~8;
             }
@@ -892,14 +812,6 @@ namespace HanselChessBOT.ConsoleApp
                 Piece.Pieces_BB[promotedPiece] ^= (1UL << sqTo);
                 Piece.Pieces_BB[pieceTo] ^= (1UL << sqTo);
 
-                // Update the piece types and pieces by color bit boards.
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceTo]] ^= (1UL << sqTo);
-
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceTo]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceFrom]] ^= (1UL << sqFrom);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[promotedPiece]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << sqFrom);
             }
 
             else if (moveType == CommonDefs.MOVETYPE_KING_CASTLE)
@@ -920,14 +832,6 @@ namespace HanselChessBOT.ConsoleApp
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_white_castle_rights = BoardDefs.GameStateInformationPerPly[ply + 1].previous_white_castle_rights;
 
-                    // Update the piece types and pieces by color bit boards.
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.g1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WR]] ^= (1UL << Square.h1) ^ (1UL << Square.f1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.h1) ^ (1UL << Square.g1) ^ (1UL << Square.f1);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.g1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WR]] ^= (1UL << Square.h1) ^ (1UL << Square.f1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.h1) ^ (1UL << Square.g1) ^ (1UL << Square.f1);
                 }
 
                 else if (pieceFrom == Piece.BK)
@@ -945,20 +849,7 @@ namespace HanselChessBOT.ConsoleApp
 
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_black_castle_rights = BoardDefs.GameStateInformationPerPly[ply + 1].previous_black_castle_rights;
-
-                    // Update the piece types and pieces by color bit boards.
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.g8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BR]] ^= (1UL << Square.h8) ^ (1UL << Square.f8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.h8) ^ (1UL << Square.g8) ^ (1UL << Square.f8);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.g8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BR]] ^= (1UL << Square.h8) ^ (1UL << Square.f8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.h8) ^ (1UL << Square.g8) ^ (1UL << Square.f8);
-
-
                 }
-
-
             }
 
             else if (moveType == CommonDefs.MOVETYPE_QUEEN_CASTLE)
@@ -978,14 +869,6 @@ namespace HanselChessBOT.ConsoleApp
 
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_white_castle_rights = BoardDefs.GameStateInformationPerPly[ply + 1].previous_white_castle_rights;
-
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.c1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WR]] ^= (1UL << Square.a1) ^ (1UL << Square.d1);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.a1) ^ (1UL << Square.c1) ^ (1UL << Square.d1);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WK]] ^= (1UL << Square.e1) ^ (1UL << Square.c1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WR]] ^= (1UL << Square.a1) ^ (1UL << Square.d1);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e1) ^ (1UL << Square.a1) ^ (1UL << Square.c1) ^ (1UL << Square.d1);
                 }
 
                 else if (pieceFrom == Piece.BK)
@@ -1004,15 +887,6 @@ namespace HanselChessBOT.ConsoleApp
                     // update the castle permissions.
                     BoardDefs.GameStateInformationPerPly[ply + 1].current_black_castle_rights = BoardDefs.GameStateInformationPerPly[ply + 1].previous_black_castle_rights;
 
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.c8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BR]] ^= (1UL << Square.a8) ^ (1UL << Square.d8);
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.a8) ^ (1UL << Square.c8) ^ (1UL << Square.d8);
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BK]] ^= (1UL << Square.e8) ^ (1UL << Square.c8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BR]] ^= (1UL << Square.a8) ^ (1UL << Square.d8);
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << Square.e8) ^ (1UL << Square.a8) ^ (1UL << Square.c8) ^ (1UL << Square.d8);
-
-
                 }
 
 
@@ -1028,39 +902,18 @@ namespace HanselChessBOT.ConsoleApp
                 Piece.Pieces_BB[pieceFrom] ^= (1UL << sqFrom) ^ (1UL << sqTo);
                 Piece.Pieces_BB[pieceTo] ^= (1UL << sqTo);
 
-
-                //// Update the piece types and pieces by color bit boards.
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceTo]] ^= (1UL << sqTo);
-
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceTo]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << sqFrom);
-
                 // if the pawn is white, then the captured piece is black pawn, else the captured piece is white pawn.
                 if (pieceFrom == Piece.WP)
                 {
                     Piece.Pieces_BB[Piece.BP] ^= (1UL << (sqTo + DirectionMasks.South));
                     BoardDefs.Board[sqTo + DirectionMasks.South] = Piece.BP;
                     Piece.Pieces_BB[Piece.NO_PIECE] ^= (1UL << (sqTo + DirectionMasks.South));
-
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.BP]] ^= (1UL << (sqTo + DirectionMasks.South));
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.South));
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.BP]] ^= (1UL << (sqTo + DirectionMasks.South));
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.South));
                 }
                 else
                 {
                     Piece.Pieces_BB[Piece.WP] ^= (1UL << (sqTo + DirectionMasks.North));
                     BoardDefs.Board[sqTo + DirectionMasks.North] = Piece.WP;
                     Piece.Pieces_BB[Piece.NO_PIECE] ^= (1UL << (sqTo + DirectionMasks.North));
-
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.WP]] ^= (1UL << (sqTo + DirectionMasks.North));
-                    //Piece.PiecesByColor_BB[Piece.PieceColor[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.North));
-
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.WP]] ^= (1UL << (sqTo + DirectionMasks.North));
-                    //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << (sqTo + DirectionMasks.North));
                 }
             }
 
@@ -1073,13 +926,6 @@ namespace HanselChessBOT.ConsoleApp
                 Piece.Pieces_BB[pieceFrom] ^= (1UL << sqFrom) ^ (1UL << sqTo);
                 Piece.Pieces_BB[pieceTo] ^= (1UL << sqTo);
 
-                //// Update the piece types and pieces by color bit boards.
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByColor_BB[Piece.PieceColor[pieceTo]] ^= (1UL << sqTo);
-
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceTo]] ^= (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[pieceFrom]] ^= (1UL << sqFrom) ^ (1UL << sqTo);
-                //Piece.PiecesByType_BB[Piece.PieceTypes[Piece.NO_PIECE]] ^= (1UL << sqFrom);
             }
 
             BoardDefs.GameStateInformationPerPly[ply + 1].current_white_castle_rights = BoardDefs.GameStateInformationPerPly[ply + 1].previous_white_castle_rights;

@@ -27,7 +27,7 @@ namespace HanselChessBOT.ConsoleApp
             for (int i = 0; i < MoveGeneration.MOVES_AT_PLY[ply]; i++)
             {
                 ulong nodes_divide = 0UL;
-                Move m = MoveGeneration.moveList[MoveGeneration.MAX_PLY * ply + i];
+                Move m = MoveGeneration.moveList[ply][i];
                 MoveGeneration.MakeMove(m.move, ply);
                 ply++;
                 if (LegalMoveManager.IsKingInCheck(turn))
@@ -64,7 +64,7 @@ namespace HanselChessBOT.ConsoleApp
             for (int i = 0; i < MoveGeneration.MOVES_AT_PLY[ply]; i++)
             {
                 ulong nodes_divide = 0UL;
-                Move m = MoveGeneration.moveList[MoveGeneration.MAX_PLY * ply + i];
+                Move m = MoveGeneration.moveList[ply][i];
                 MoveGeneration.MakeMove(m.move, ply);
 
                 ply++;
@@ -102,7 +102,7 @@ namespace HanselChessBOT.ConsoleApp
             for (int i = 0; i < MoveGeneration.MOVES_AT_PLY[ply]; i++)
             {
                 ulong nodes_divide = 0UL;
-                Move m = MoveGeneration.moveList[MoveGeneration.MAX_PLY * ply + i];
+                Move m = MoveGeneration.moveList[ply][i];
 
                 MoveGeneration.MakeMove(m.move, ply);
 
@@ -140,7 +140,7 @@ namespace HanselChessBOT.ConsoleApp
             for (int i = 0; i < MoveGeneration.MOVES_AT_PLY[ply]; i++)
             {
                 ulong nodes_divide = 0UL;
-                Move m = MoveGeneration.moveList[MoveGeneration.MAX_PLY * ply + i];
+                Move m = MoveGeneration.moveList[ply][i];
 
                 MoveGeneration.MakeMove(m.move, ply);
 
