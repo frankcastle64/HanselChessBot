@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 
 namespace HanselChessBOT.ConsoleApp
 {
-    public static class IO
+    public class IO
     {
-        public static void SetPosition(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        public void SetPosition(string fen, ref BoardDefs boardDefs, FenManager fenManager)
         {
-            FenManager.SetPositionFromFen(fen);
+            if (string.IsNullOrEmpty(fen))
+            {
+                fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            }
+            fenManager.SetPositionFromFen(fen, ref boardDefs);
         }
 
         public static void DisplayBoard()

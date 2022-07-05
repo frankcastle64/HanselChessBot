@@ -21,13 +21,18 @@ namespace HanselChessBOT.ConsoleApp
         public static bool turn;
     }
 
-    public static class BoardDefs
+    public ref struct BoardDefs
     {
 
         public static int[] Board = new int[64];
-        public static GameStateInformation[] GameStateInformationPerPly = new GameStateInformation[MoveGeneration.MAX_PLY];
+        public Span<GameStateInformation> GameStateInformationPerPly; 
 
-        public static void ResetStates()
+        public BoardDefs()
+        {
+            this.GameStateInformationPerPly = new GameStateInformation[MoveGeneration.MAX_PLY];
+        }
+
+        public void ResetStates()
         {
             // Reset the Board to empty.
             for (int sq = Square.a1; sq <= Square.h8; sq++)
@@ -61,7 +66,7 @@ namespace HanselChessBOT.ConsoleApp
                 MoveGeneration.moveList[ply] = new Move[MoveGeneration.MAX_MOVES_PER_PLY];
             }
         }
-        public static void InitOnce()
+        public void InitOnce()
         {
             ResetStates();
             MagicGeneration.MagicNumbers.InitMagics();

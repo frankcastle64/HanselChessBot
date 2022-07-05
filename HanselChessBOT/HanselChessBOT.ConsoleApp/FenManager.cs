@@ -6,19 +6,25 @@ using System.Threading.Tasks;
 
 namespace HanselChessBOT.ConsoleApp
 {
-    public static class FenManager
+    public class FenManager
     {
-        public static void SetPositionFromFen(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+       
+        public void SetPositionFromFen(string fen,ref BoardDefs boardDefs)
         {
+            if (string.IsNullOrEmpty(fen))
+            {
+                fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            }
+
             string[] fenElements = fen.Split(' ');
 
             SetBoardFromFenString(fenElements[0], 0);
             SetTurn(fenElements[1]);
-            UpdateCastlingRights(fenElements[2], 0);
-            UpdateEnpassantSquare(fenElements[3], 0);
+            UpdateCastlingRights(fenElements[2], 0, ref boardDefs);
+            UpdateEnpassantSquare(fenElements[3], 0,ref boardDefs);
         }
 
-        private static void SetBoardFromFenString(string boardPos, int ply)
+        private void SetBoardFromFenString(string boardPos, int ply)
         {
             int file = RankFileDefs.File_A;
             int rank = RankFileDefs.Rank_8;
@@ -53,33 +59,33 @@ namespace HanselChessBOT.ConsoleApp
 
         }
 
-        private static void UpdateCastlingRights(string castleRightsStr, int ply)
+        private static void UpdateCastlingRights(string castleRightsStr, int ply, ref BoardDefs boardDefs)
         {
-            BoardDefs.GameStateInformationPerPly[ply].current_white_castle_rights = 0;
-            BoardDefs.GameStateInformationPerPly[ply].current_black_castle_rights = 0;
+            boardDefs.GameStateInformationPerPly[ply].current_white_castle_rights = 0;
+            boardDefs.GameStateInformationPerPly[ply].current_black_castle_rights = 0;
 
             if (castleRightsStr.Contains("K"))
             {
-                BoardDefs.GameStateInformationPerPly[ply].current_white_castle_rights |= 1;
+                boardDefs.GameStateInformationPerPly[ply].current_white_castle_rights |= 1;
             }
             if (castleRightsStr.Contains("Q"))
             {
-                BoardDefs.GameStateInformationPerPly[ply].current_white_castle_rights |= 2;
+                boardDefs.GameStateInformationPerPly[ply].current_white_castle_rights |= 2;
             }
             if (castleRightsStr.Contains("k"))
             {
-                BoardDefs.GameStateInformationPerPly[ply].current_black_castle_rights |= 4;
+                boardDefs.GameStateInformationPerPly[ply].current_black_castle_rights |= 4;
             }
             if (castleRightsStr.Contains("q"))
             {
-                BoardDefs.GameStateInformationPerPly[ply].current_black_castle_rights |= 8;
+                boardDefs.GameStateInformationPerPly[ply].current_black_castle_rights |= 8;
             }
 
-            BoardDefs.GameStateInformationPerPly[ply].previous_white_castle_rights = BoardDefs.GameStateInformationPerPly[ply].current_white_castle_rights;
-            BoardDefs.GameStateInformationPerPly[ply].previous_black_castle_rights = BoardDefs.GameStateInformationPerPly[ply].current_black_castle_rights;
+            boardDefs.GameStateInformationPerPly[ply].previous_white_castle_rights = boardDefs.GameStateInformationPerPly[ply].current_white_castle_rights;
+            boardDefs.GameStateInformationPerPly[ply].previous_black_castle_rights = boardDefs.GameStateInformationPerPly[ply].current_black_castle_rights;
         }
 
-        private static void UpdateEnpassantSquare(string enpassantSq, int ply)
+        private static void UpdateEnpassantSquare(string enpassantSq, int ply, ref BoardDefs boardDefs)
         {
             int epSq = 0;
             if (enpassantSq != "-")
@@ -88,8 +94,8 @@ namespace HanselChessBOT.ConsoleApp
                 char rank = enpassantSq[1];
                 epSq = 8 * (rank - '1') + (file - 'a');
             }
-            BoardDefs.GameStateInformationPerPly[ply].current_enpassant_sq = epSq;
-            BoardDefs.GameStateInformationPerPly[ply].previous_enpassant_sq = BoardDefs.GameStateInformationPerPly[ply].current_enpassant_sq;
+            boardDefs.GameStateInformationPerPly[ply].current_enpassant_sq = epSq;
+            boardDefs.GameStateInformationPerPly[ply].previous_enpassant_sq = boardDefs.GameStateInformationPerPly[ply].current_enpassant_sq;
         }
 
         private static void SetTurn(string turnCh)
@@ -109,19 +115,6 @@ namespace HanselChessBOT.ConsoleApp
             {
                 Piece.Pieces_BB[BoardDefs.Board[sq]] ^= (1UL << sq);
             }
-
-            // Update pieces by their piece types.
-            //Piece.PiecesByType_BB[Piece.PieceType_NO_Piece] = Piece.Pieces_BB[Piece.NO_PIECE];
-            //Piece.PiecesByType_BB[Piece.PieceType_Pawn] = Piece.Pieces_BB[Piece.WP] | Piece.Pieces_BB[Piece.BP];
-            //Piece.PiecesByType_BB[Piece.PieceType_Knight] = Piece.Pieces_BB[Piece.WN] | Piece.Pieces_BB[Piece.BN];
-            //Piece.PiecesByType_BB[Piece.PieceType_Bishop] = Piece.Pieces_BB[Piece.WB] | Piece.Pieces_BB[Piece.BB];
-            //Piece.PiecesByType_BB[Piece.PieceType_Rook] = Piece.Pieces_BB[Piece.WR] | Piece.Pieces_BB[Piece.BR];
-            //Piece.PiecesByType_BB[Piece.PieceType_Queen] = Piece.Pieces_BB[Piece.WQ] | Piece.Pieces_BB[Piece.BQ];
-            //Piece.PiecesByType_BB[Piece.PieceType_King] = Piece.Pieces_BB[Piece.WK] | Piece.Pieces_BB[Piece.BK];
-
-            //// Update pieces by their colors.
-            //Piece.PiecesByColor_BB[CommonDefs.WHITE_TURN] = Piece.Pieces_BB[Piece.WP] | Piece.Pieces_BB[Piece.WN] | Piece.Pieces_BB[Piece.WB] | Piece.Pieces_BB[Piece.WR] | Piece.Pieces_BB[Piece.WQ] | Piece.Pieces_BB[Piece.WK];
-            //Piece.PiecesByColor_BB[CommonDefs.BLACK_TURN] = Piece.Pieces_BB[Piece.BP] | Piece.Pieces_BB[Piece.BN] | Piece.Pieces_BB[Piece.BB] | Piece.Pieces_BB[Piece.BR] | Piece.Pieces_BB[Piece.BQ] | Piece.Pieces_BB[Piece.BK];
         }
     }
 }
