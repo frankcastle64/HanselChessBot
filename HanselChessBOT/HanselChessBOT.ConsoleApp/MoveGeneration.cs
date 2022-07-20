@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
 namespace HanselChessBOT.ConsoleApp
 {
@@ -348,7 +343,7 @@ namespace HanselChessBOT.ConsoleApp
         {
             int from, to;
             ulong bb = Piece.Pieces_BB[piece];
- 
+
             while (bb > 0)
             {
                 from = Utilities.BitScanForward(bb);
@@ -370,7 +365,7 @@ namespace HanselChessBOT.ConsoleApp
         {
             int from, to;
             ulong bb = Piece.Pieces_BB[piece];
-            
+
             from = Utilities.BitScanForward(bb);
             ulong attacks = AttackMaps.KING_ATTACKS[from] & targetBitboard;
             while (attacks > 0)
@@ -484,7 +479,7 @@ namespace HanselChessBOT.ConsoleApp
                 ulong occupancy = ~Piece.Pieces_BB[Piece.NO_PIECE];
                 occupancy &= MagicGeneration.MagicNumbers.BishopAttacksInnerSixBits[from];
                 occupancy *= MagicGeneration.MagicNumbers.BishopMagicNumbers[from];
-                occupancy >>= 64 - MagicGeneration.MagicNumbers.BitsRequiredByBishop[from];
+                occupancy >>= MagicGeneration.MagicNumbers.BitsRequiredByBishop[from];
                 ulong moves = MagicGeneration.MagicNumbers.BishopAttacks[from, occupancy] & targetBitBoard;
 
                 while (moves > 0)
@@ -514,7 +509,7 @@ namespace HanselChessBOT.ConsoleApp
                 ulong occupancy = ~Piece.Pieces_BB[Piece.NO_PIECE];
                 occupancy &= MagicGeneration.MagicNumbers.RookAttacksInnerSixBits[from];
                 occupancy *= MagicGeneration.MagicNumbers.RookMagicNumbers[from];
-                occupancy >>= 64 - MagicGeneration.MagicNumbers.BitsRequiredByRook[from];
+                occupancy >>= MagicGeneration.MagicNumbers.BitsRequiredByRook[from];
                 ulong moves = MagicGeneration.MagicNumbers.RookAttacks[from, occupancy] & targetBitBoard;
 
                 while (moves > 0)
@@ -544,13 +539,13 @@ namespace HanselChessBOT.ConsoleApp
                 ulong occupancyRook = ~Piece.Pieces_BB[Piece.NO_PIECE];
                 occupancyRook &= MagicGeneration.MagicNumbers.RookAttacksInnerSixBits[from];
                 occupancyRook *= MagicGeneration.MagicNumbers.RookMagicNumbers[from];
-                occupancyRook >>= 64 - MagicGeneration.MagicNumbers.BitsRequiredByRook[from];
+                occupancyRook >>= MagicGeneration.MagicNumbers.BitsRequiredByRook[from];
                 ulong movesRook = MagicGeneration.MagicNumbers.RookAttacks[from, occupancyRook] & targetBitBoard;
 
                 ulong occupancyBishop = ~Piece.Pieces_BB[Piece.NO_PIECE];
                 occupancyBishop &= MagicGeneration.MagicNumbers.BishopAttacksInnerSixBits[from];
                 occupancyBishop *= MagicGeneration.MagicNumbers.BishopMagicNumbers[from];
-                occupancyBishop >>= 64 - MagicGeneration.MagicNumbers.BitsRequiredByBishop[from];
+                occupancyBishop >>= MagicGeneration.MagicNumbers.BitsRequiredByBishop[from];
                 ulong movesBishop = MagicGeneration.MagicNumbers.BishopAttacks[from, occupancyBishop] & targetBitBoard;
 
                 ulong movesQueen = movesRook | movesBishop;
@@ -940,6 +935,7 @@ namespace HanselChessBOT.ConsoleApp
             boardDefs.GameStateInformationPerPly[ply + 1].current_enpassant_sq = boardDefs.GameStateInformationPerPly[ply + 1].previous_enpassant_sq;
         }
 
+
         public int GenerateAllMoves(int ply, bool turn, int n)
         {
             if (turn)
@@ -975,7 +971,7 @@ namespace HanselChessBOT.ConsoleApp
             return n;
         }
 
-        public static ulong GetPinnedPieces(int piece, ulong opponentQueen, ulong opponentRook, ulong opponentBishop, ulong occupiedSquares)
+        public ulong GetPinnedPieces(int piece, ulong opponentQueen, ulong opponentRook, ulong opponentBishop, ulong occupiedSquares)
         {
             int kingSq = Utilities.BitScanForward(Piece.Pieces_BB[piece]);
             ulong result = 0UL;
@@ -990,6 +986,8 @@ namespace HanselChessBOT.ConsoleApp
                 {
                     result |= b;
                 }
+
+                pinners &= pinners - 1;
             }
 
             return result;

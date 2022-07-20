@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp
+﻿namespace HanselChessBOT.ConsoleApp
 {
     public static class RankFileDefs
     {
@@ -19,7 +13,7 @@ namespace HanselChessBOT.ConsoleApp
         public const ulong File_F_BB = 0x2020202020202020UL;
         public const ulong File_G_BB = 0x4040404040404040UL;
         public const ulong File_H_BB = 0x8080808080808080UL;
-        
+
         public const ulong Rank_1_BB = 0xFFUL;
         public const ulong Rank_2_BB = 0xFF00UL;
         public const ulong Rank_3_BB = 0xFF0000UL;

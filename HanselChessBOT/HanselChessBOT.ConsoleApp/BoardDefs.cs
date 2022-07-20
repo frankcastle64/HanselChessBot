@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp
+﻿namespace HanselChessBOT.ConsoleApp
 {
     public struct GameStateInformation
     {
@@ -25,7 +19,7 @@ namespace HanselChessBOT.ConsoleApp
     {
 
         public static int[] Board = new int[64];
-        public Span<GameStateInformation> GameStateInformationPerPly; 
+        public Span<GameStateInformation> GameStateInformationPerPly;
 
         public BoardDefs()
         {

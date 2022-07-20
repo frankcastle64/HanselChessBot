@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp
+﻿namespace HanselChessBOT.ConsoleApp
 {
     public class DirectionMasks
     {
@@ -30,18 +24,18 @@ namespace HanselChessBOT.ConsoleApp
         public const int SouthWest = -9;
         public const int West = -1;
 
-      
+
     }
 
     public static class MoveEncodingMasks
     {
         public const int SQ_TO_SHIFT = 6;
-        public const int PIECE_FROM_SHIFT= 12;
-        public const int PIECE_TO_SHIFT= 16;
+        public const int PIECE_FROM_SHIFT = 12;
+        public const int PIECE_TO_SHIFT = 16;
         public const int TYPE_OF_MOVE_SHIFT = 20;
         public const int PROMOTED_PIECE_SHIFT = 23;
         public const int PIECE_TYPE_SHIFT = 27;
-        
+
 
         public const int SQ_FROM_MASK = 0x3F;
         public const int SQ_TO_MASK = 0x3F;

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp
+﻿namespace HanselChessBOT.ConsoleApp
 {
     public static class Engine
     {
@@ -14,7 +8,7 @@ namespace HanselChessBOT.ConsoleApp
 
         public static void SearchIterative(bool turn)
         {
-           for(int currentDepth = 1; currentDepth <= MAX_DEPTH; currentDepth++)
+            for (int currentDepth = 1; currentDepth <= MAX_DEPTH; currentDepth++)
             {
 
             }

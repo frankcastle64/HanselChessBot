@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using HanselChessBOT.ConsoleApp.MagicGeneration;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using HanselChessBOT.ConsoleApp.MagicGeneration;
 
 namespace HanselChessBOT.ConsoleApp
 {
 
-    public static class LegalMoveManager
+    public ref struct LegalMoveManager
     {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -40,13 +35,13 @@ namespace HanselChessBOT.ConsoleApp
             ulong occupancyRook = ~Piece.Pieces_BB[Piece.NO_PIECE];
             occupancyRook &= MagicNumbers.RookAttacksInnerSixBits[sq];
             occupancyRook *= MagicNumbers.RookMagicNumbers[sq];
-            occupancyRook >>= 64 - MagicNumbers.BitsRequiredByRook[sq];
+            occupancyRook >>= MagicNumbers.BitsRequiredByRook[sq];
             ulong movesRook = MagicNumbers.RookAttacks[sq, occupancyRook];
 
             ulong occupancyBishop = ~Piece.Pieces_BB[Piece.NO_PIECE];
             occupancyBishop &= MagicNumbers.BishopAttacksInnerSixBits[sq];
             occupancyBishop *= MagicNumbers.BishopMagicNumbers[sq];
-            occupancyBishop >>= 64 - MagicNumbers.BitsRequiredByBishop[sq];
+            occupancyBishop >>= MagicNumbers.BitsRequiredByBishop[sq];
             ulong movesBishop = MagicNumbers.BishopAttacks[sq, occupancyBishop];
 
             //ulong attackOnSquare = (AttackMaps.KNIGHT_ATTACKS[sq] & Piece.Pieces_BB[knightColor])

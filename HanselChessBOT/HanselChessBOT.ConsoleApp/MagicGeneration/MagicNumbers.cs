@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp.MagicGeneration
+﻿namespace HanselChessBOT.ConsoleApp.MagicGeneration
 {
     public static class MagicNumbers
     {
@@ -19,26 +13,26 @@ namespace HanselChessBOT.ConsoleApp.MagicGeneration
 
         public static readonly int[] BitsRequiredByRook = new int[]
        {
-            12, 11, 11, 11, 11, 11, 11, 12,
-            11, 10, 10, 10, 10, 10, 10, 11,
-            11, 10, 10, 10, 10, 10, 10, 11,
-            11, 10, 10, 10, 10, 10, 10, 11,
-            11, 10, 10, 10, 10, 10, 10, 11,
-            11, 10, 10, 10, 10, 10, 10, 11,
-            11, 10, 10, 10, 10, 10, 10, 11,
-            12, 11, 11, 11, 11, 11, 11, 12
-       };
+            52, 53, 53, 53, 53, 53, 53, 52,
+            53, 54, 54, 54, 54, 54, 54, 53,
+            53, 54, 54, 54, 54, 54, 54, 53,
+            53, 54, 54, 54, 54, 54, 54, 53,
+            53, 54, 54, 54, 54, 54, 54, 53,
+            53, 54, 54, 54, 54, 54, 54, 53,
+            53, 54, 54, 54, 54, 54, 54, 53,
+            52, 53, 53, 53, 53, 53, 53, 52
+      };
 
         public static readonly int[] BitsRequiredByBishop = new int[]
         {
-            6, 5, 5, 5, 5, 5, 5, 6,
-            5, 5, 5, 5, 5, 5, 5, 5,
-            5, 5, 7, 7, 7, 7, 5, 5,
-            5, 5, 7, 9, 9, 7, 5, 5,
-            5, 5, 7, 9, 9, 7, 5, 5,
-            5, 5, 7, 7, 7, 7, 5, 5,
-            5, 5, 5, 5, 5, 5, 5, 5,
-            6, 5, 5, 5, 5, 5, 5, 6
+            58, 59, 59, 59, 59, 59, 59, 58,
+            59, 59, 59, 59, 59, 59, 59, 59,
+            59, 59, 57, 57, 57, 57, 59, 59,
+            59, 59, 57, 55, 55, 57, 59, 59,
+            59, 59, 57, 55, 55, 57, 59, 59,
+            59, 59, 57, 57, 57, 57, 59, 59,
+            59, 59, 59, 59, 59, 59, 59, 59,
+            58, 59, 59, 59, 59, 59, 59, 58,
         };
 
         public static readonly ulong[] RookMagicNumbers = new ulong[]
@@ -79,7 +73,7 @@ namespace HanselChessBOT.ConsoleApp.MagicGeneration
         {
             for (int sq = Square.a1; sq <= Square.h8; sq++)
             {
-                int setBitsInMaskForRook = BitsRequiredByRook[sq];
+                int setBitsInMaskForRook = 64 - BitsRequiredByRook[sq];
                 ulong maskRook = RookAttacksInnerSixBits[sq];
                 for (int i = 0; i < (1 << setBitsInMaskForRook); i++)
                 {
@@ -87,7 +81,7 @@ namespace HanselChessBOT.ConsoleApp.MagicGeneration
                 }
 
 
-                int setBitsInMaskForBishop = BitsRequiredByBishop[sq];
+                int setBitsInMaskForBishop = 64 - BitsRequiredByBishop[sq];
                 ulong maskBishop = BishopAttacksInnerSixBits[sq];
                 for (int i = 0; i < (1 << setBitsInMaskForBishop); i++)
                 {
@@ -101,19 +95,19 @@ namespace HanselChessBOT.ConsoleApp.MagicGeneration
             for (int sq = Square.a1; sq <= Square.h8; sq++)
             {
                 int setBitsInMaskForRook = BitsRequiredByRook[sq];
-                for (int i = 0; i < 1 << setBitsInMaskForRook; i++)
+                for (int i = 0; i < 1 << (64 - setBitsInMaskForRook); i++)
                 {
                     ulong occupancy = RookOccupancyAttacks[sq, i];
-                    int magic_index = (int)((occupancy * RookMagicNumbers[sq]) >> (64 - setBitsInMaskForRook));
+                    int magic_index = (int)((occupancy * RookMagicNumbers[sq]) >> (setBitsInMaskForRook));
                     RookAttacks[sq, magic_index] = MagicSetup.ComputeRookAttackOnOccupancy(sq, occupancy);
                 }
 
 
                 int setBitsInMaskForBishop = BitsRequiredByBishop[sq];
-                for (int i = 0; i < 1 << setBitsInMaskForBishop; i++)
+                for (int i = 0; i < 1 << (64 - setBitsInMaskForBishop); i++)
                 {
                     ulong occupancy = BishopOccupancyAttacks[sq, i];
-                    int magic_index = (int)((occupancy * BishopMagicNumbers[sq]) >> (64 - setBitsInMaskForBishop));
+                    int magic_index = (int)((occupancy * BishopMagicNumbers[sq]) >> (setBitsInMaskForBishop));
                     BishopAttacks[sq, magic_index] = MagicSetup.ComputeBishopAttackOnOccupancy(sq, occupancy);
                 }
             }

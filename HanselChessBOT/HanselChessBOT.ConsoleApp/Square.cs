@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp
+﻿namespace HanselChessBOT.ConsoleApp
 {
     public static class Square
     {
-        public const int a1 = 0;  public const int b1 = 1;  public const int c1 = 2;  public const int d1 = 3;  public const int e1 = 4;  public const int f1 = 5;  public const int g1 = 6;  public const int h1 = 7;
-        public const int a2 = 8;  public const int b2 = 9;  public const int c2 = 10; public const int d2 = 11; public const int e2 = 12; public const int f2 = 13; public const int g2 = 14; public const int h2 = 15;
+        public const int a1 = 0; public const int b1 = 1; public const int c1 = 2; public const int d1 = 3; public const int e1 = 4; public const int f1 = 5; public const int g1 = 6; public const int h1 = 7;
+        public const int a2 = 8; public const int b2 = 9; public const int c2 = 10; public const int d2 = 11; public const int e2 = 12; public const int f2 = 13; public const int g2 = 14; public const int h2 = 15;
         public const int a3 = 16; public const int b3 = 17; public const int c3 = 18; public const int d3 = 19; public const int e3 = 20; public const int f3 = 21; public const int g3 = 22; public const int h3 = 23;
         public const int a4 = 24; public const int b4 = 25; public const int c4 = 26; public const int d4 = 27; public const int e4 = 28; public const int f4 = 29; public const int g4 = 30; public const int h4 = 31;
         public const int a5 = 32; public const int b5 = 33; public const int c5 = 34; public const int d5 = 35; public const int e5 = 36; public const int f5 = 37; public const int g5 = 38; public const int h5 = 39;

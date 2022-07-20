@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Numerics;
-using System.Runtime.Intrinsics.X86;
+﻿using System.Diagnostics;
 
 namespace HanselChessBOT.ConsoleApp
 {
@@ -37,7 +33,7 @@ namespace HanselChessBOT.ConsoleApp
             MoveGeneration moveGeneration = new MoveGeneration(boardDefs);
             boardDefs.InitOnce();
 
-            inOut.SetPosition(fenPos,ref boardDefs, fenManager);
+            inOut.SetPosition(fenPos, ref boardDefs, fenManager);
             sw.Start();
             ulong nodesActual = perftManager.Perft(depth, CurrentStateInformation.turn, ref moveGeneration);
             sw.Stop();

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp.MagicGeneration
+﻿namespace HanselChessBOT.ConsoleApp.MagicGeneration
 {
     public static class MagicSetup
     {
-       
+
         public static ulong[] Blockers = new ulong[4096];
         public static ulong[] AttackMask = new ulong[4096];
         public static ulong[] Used = new ulong[4096];

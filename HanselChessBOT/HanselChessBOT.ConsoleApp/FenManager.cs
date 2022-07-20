@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp
+﻿namespace HanselChessBOT.ConsoleApp
 {
     public class FenManager
     {
-       
-        public void SetPositionFromFen(string fen,ref BoardDefs boardDefs)
+
+        public void SetPositionFromFen(string fen, ref BoardDefs boardDefs)
         {
             if (string.IsNullOrEmpty(fen))
             {
@@ -21,7 +15,7 @@ namespace HanselChessBOT.ConsoleApp
             SetBoardFromFenString(fenElements[0], 0);
             SetTurn(fenElements[1]);
             UpdateCastlingRights(fenElements[2], 0, ref boardDefs);
-            UpdateEnpassantSquare(fenElements[3], 0,ref boardDefs);
+            UpdateEnpassantSquare(fenElements[3], 0, ref boardDefs);
         }
 
         private void SetBoardFromFenString(string boardPos, int ply)
@@ -64,19 +58,19 @@ namespace HanselChessBOT.ConsoleApp
             boardDefs.GameStateInformationPerPly[ply].current_white_castle_rights = 0;
             boardDefs.GameStateInformationPerPly[ply].current_black_castle_rights = 0;
 
-            if (castleRightsStr.Contains("K"))
+            if (castleRightsStr.Contains('K'))
             {
                 boardDefs.GameStateInformationPerPly[ply].current_white_castle_rights |= 1;
             }
-            if (castleRightsStr.Contains("Q"))
+            if (castleRightsStr.Contains('Q'))
             {
                 boardDefs.GameStateInformationPerPly[ply].current_white_castle_rights |= 2;
             }
-            if (castleRightsStr.Contains("k"))
+            if (castleRightsStr.Contains('k'))
             {
                 boardDefs.GameStateInformationPerPly[ply].current_black_castle_rights |= 4;
             }
-            if (castleRightsStr.Contains("q"))
+            if (castleRightsStr.Contains('q'))
             {
                 boardDefs.GameStateInformationPerPly[ply].current_black_castle_rights |= 8;
             }

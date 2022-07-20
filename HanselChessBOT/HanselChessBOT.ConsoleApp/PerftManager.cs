@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HanselChessBOT.ConsoleApp
+﻿namespace HanselChessBOT.ConsoleApp
 {
 
     public class PerftManager
@@ -37,7 +30,7 @@ namespace HanselChessBOT.ConsoleApp
                     continue;
                 }
                 //IO.PrintMove(m.move);
-                nodes_divide = Divide(depth - 1, !turn,ref moveGen);
+                nodes_divide = Divide(depth - 1, !turn, ref moveGen);
                 nodes += nodes_divide;
                 //IO.PrintMoveWithNodes(m.move, nodes_divide);
                 moveGen.UndoMove(m.move, ply);
@@ -114,7 +107,7 @@ namespace HanselChessBOT.ConsoleApp
                     continue;
                 }
 
-                nodes_divide = Divide3(depth - 1, !turn,ref moveGen);
+                nodes_divide = Divide3(depth - 1, !turn, ref moveGen);
                 nodes += nodes_divide;
                 //Console.Write("\t\t",m.move);
                 //IO.PrintMoveWithNodes(m.move, nodes_divide);
@@ -152,7 +145,7 @@ namespace HanselChessBOT.ConsoleApp
                     continue;
                 }
 
-                nodes_divide = Divide3(depth - 1, !turn,ref moveGen);
+                nodes_divide = Divide3(depth - 1, !turn, ref moveGen);
                 nodes += nodes_divide;
 
                 //Console.WriteLine("\t\t\t",m.move);
