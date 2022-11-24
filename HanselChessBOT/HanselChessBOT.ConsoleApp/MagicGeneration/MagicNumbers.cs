@@ -5,8 +5,8 @@
         public static ulong[,] BishopOccupancyAttacks = new ulong[64, 512];
         public static ulong[,] RookOccupancyAttacks = new ulong[64, 4096];
 
-        public static ulong[,] RookAttacks = new ulong[64, 4096];
-        public static ulong[,] BishopAttacks = new ulong[64, 4096];
+        public static ulong[][] RookAttacks = new ulong[64][];
+        public static ulong[][] BishopAttacks = new ulong[64][];
 
         public static ulong[] RookAttacksInnerSixBits = new ulong[64];
         public static ulong[] BishopAttacksInnerSixBits = new ulong[64];
@@ -95,20 +95,23 @@
             for (int sq = Square.a1; sq <= Square.h8; sq++)
             {
                 int setBitsInMaskForRook = BitsRequiredByRook[sq];
+                RookAttacks[sq] = new ulong[4096];
+                
                 for (int i = 0; i < 1 << (64 - setBitsInMaskForRook); i++)
                 {
                     ulong occupancy = RookOccupancyAttacks[sq, i];
                     int magic_index = (int)((occupancy * RookMagicNumbers[sq]) >> (setBitsInMaskForRook));
-                    RookAttacks[sq, magic_index] = MagicSetup.ComputeRookAttackOnOccupancy(sq, occupancy);
+                    RookAttacks[sq][magic_index] = MagicSetup.ComputeRookAttackOnOccupancy(sq, occupancy);
                 }
 
 
                 int setBitsInMaskForBishop = BitsRequiredByBishop[sq];
+                BishopAttacks[sq] = new ulong[512];
                 for (int i = 0; i < 1 << (64 - setBitsInMaskForBishop); i++)
                 {
                     ulong occupancy = BishopOccupancyAttacks[sq, i];
                     int magic_index = (int)((occupancy * BishopMagicNumbers[sq]) >> (setBitsInMaskForBishop));
-                    BishopAttacks[sq, magic_index] = MagicSetup.ComputeBishopAttackOnOccupancy(sq, occupancy);
+                    BishopAttacks[sq][magic_index] = MagicSetup.ComputeBishopAttackOnOccupancy(sq, occupancy);
                 }
             }
         }

@@ -32,31 +32,42 @@ namespace HanselChessBOT.ConsoleApp
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSquareAttacked(int sq, ulong pawnAttacksMask, int pawnColor, int knightColor, int bishopColor, int rookColor, int queenColor, int kingColor)
         {
-            ulong occupancyRook = ~Piece.Pieces_BB[Piece.NO_PIECE];
+            if ((AttackMaps.KNIGHT_ATTACKS[sq] & Piece.Pieces_BB[knightColor]) > 0) return true;
+
+            ulong occupancy = ~Piece.Pieces_BB[Piece.NO_PIECE];
+            ulong occupancyRook = occupancy;
             occupancyRook &= MagicNumbers.RookAttacksInnerSixBits[sq];
             occupancyRook *= MagicNumbers.RookMagicNumbers[sq];
             occupancyRook >>= MagicNumbers.BitsRequiredByRook[sq];
-            ulong movesRook = MagicNumbers.RookAttacks[sq, occupancyRook];
+            ulong movesRook = MagicNumbers.RookAttacks[sq][occupancyRook];
+            if ((movesRook & Piece.Pieces_BB[rookColor]) > 0) return true;
 
-            ulong occupancyBishop = ~Piece.Pieces_BB[Piece.NO_PIECE];
+            ulong occupancyBishop = occupancy;
             occupancyBishop &= MagicNumbers.BishopAttacksInnerSixBits[sq];
             occupancyBishop *= MagicNumbers.BishopMagicNumbers[sq];
             occupancyBishop >>= MagicNumbers.BitsRequiredByBishop[sq];
-            ulong movesBishop = MagicNumbers.BishopAttacks[sq, occupancyBishop];
+            ulong movesBishop = MagicNumbers.BishopAttacks[sq][occupancyBishop];
+            if ((movesBishop & Piece.Pieces_BB[bishopColor]) > 0) return true;
 
-            //ulong attackOnSquare = (AttackMaps.KNIGHT_ATTACKS[sq] & Piece.Pieces_BB[knightColor])
-            //                  | (AttackMaps.KING_ATTACKS[sq] & Piece.Pieces_BB[kingColor])
-            //                  | (pawnAttacksMask & Piece.Pieces_BB[pawnColor])
-            //                  | (movesRook & Piece.Pieces_BB[rookColor])
-            //                  | (movesBishop & Piece.Pieces_BB[bishopColor])
-            //                  | ((movesRook | movesBishop) & Piece.Pieces_BB[queenColor]);
+            if (((movesRook | movesBishop) & Piece.Pieces_BB[queenColor]) > 0) return true;
 
-            return ((AttackMaps.KNIGHT_ATTACKS[sq] & Piece.Pieces_BB[knightColor]) > 0)
-                             || ((AttackMaps.KING_ATTACKS[sq] & Piece.Pieces_BB[kingColor]) > 0)
-                             || ((pawnAttacksMask & Piece.Pieces_BB[pawnColor]) > 0)
-                             || ((movesRook & Piece.Pieces_BB[rookColor]) > 0)
-                             || ((movesBishop & Piece.Pieces_BB[bishopColor]) > 0)
-                             || (((movesRook | movesBishop) & Piece.Pieces_BB[queenColor]) > 0);
+            if ((AttackMaps.KING_ATTACKS[sq] & Piece.Pieces_BB[kingColor]) > 0) return true;
+            if ((pawnAttacksMask & Piece.Pieces_BB[pawnColor]) > 0) return true;
+
+            return false;
+            ////ulong attackOnSquare = (AttackMaps.KNIGHT_ATTACKS[sq] & Piece.Pieces_BB[knightColor])
+            ////                  | (AttackMaps.KING_ATTACKS[sq] & Piece.Pieces_BB[kingColor])
+            ////                  | (pawnAttacksMask & Piece.Pieces_BB[pawnColor])
+            ////                  | (movesRook & Piece.Pieces_BB[rookColor])
+            ////                  | (movesBishop & Piece.Pieces_BB[bishopColor])
+            ////                  | ((movesRook | movesBishop) & Piece.Pieces_BB[queenColor]);
+
+            //return ((AttackMaps.KNIGHT_ATTACKS[sq] & Piece.Pieces_BB[knightColor]) > 0)
+            //                 || ((AttackMaps.KING_ATTACKS[sq] & Piece.Pieces_BB[kingColor]) > 0)
+            //                 || ((pawnAttacksMask & Piece.Pieces_BB[pawnColor]) > 0)
+            //                 || ((movesRook & Piece.Pieces_BB[rookColor]) > 0)
+            //                 || ((movesBishop & Piece.Pieces_BB[bishopColor]) > 0)
+            //                 || (((movesRook | movesBishop) & Piece.Pieces_BB[queenColor]) > 0);
 
 
         }

@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
 
 namespace HanselChessBOT.ConsoleApp
 {
@@ -58,27 +60,35 @@ namespace HanselChessBOT.ConsoleApp
         public int GenerateCaptures(int ply, bool turn, int n)
         {
 
-            if (turn)
+            switch (turn)
             {
-                ulong targetBitBoard = Piece.Pieces_BB[Piece.BP] | Piece.Pieces_BB[Piece.BN] | Piece.Pieces_BB[Piece.BB] | Piece.Pieces_BB[Piece.BR] | Piece.Pieces_BB[Piece.BQ];
-                n = GenerateWhitePawnCapture(ply, n, targetBitBoard);
-                n = GenerateKnightMoves(ply, n, Piece.WN, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateKingMoves(ply, n, Piece.WK, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateBishopMoves(ply, n, Piece.WB, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateRookMoves(ply, n, Piece.WR, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateQueenMoves(ply, n, Piece.WQ, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-            }
-            else
-            {
-                ulong targetBitBoard = Piece.Pieces_BB[Piece.WP] | Piece.Pieces_BB[Piece.WN] | Piece.Pieces_BB[Piece.WB] | Piece.Pieces_BB[Piece.WR] | Piece.Pieces_BB[Piece.WQ];
+                case true:
+                    {
+                        ulong targetBitBoard = Piece.Pieces_BB[Piece.BP] | Piece.Pieces_BB[Piece.BN] | Piece.Pieces_BB[Piece.BB] | Piece.Pieces_BB[Piece.BR] | Piece.Pieces_BB[Piece.BQ];
+                        n = GenerateWhitePawnCapture(ply, n, targetBitBoard);
+                        n = GenerateKnightMoves(ply, n, Piece.WN, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateKingMoves(ply, n, Piece.WK, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateBishopMoves(ply, n, Piece.WB, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateRookMoves(ply, n, Piece.WR, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateQueenMoves(ply, n, Piece.WQ, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                    }
+                    break;
+                case false:
+                    {
+                        ulong targetBitBoard = Piece.Pieces_BB[Piece.WP] | Piece.Pieces_BB[Piece.WN] | Piece.Pieces_BB[Piece.WB] | Piece.Pieces_BB[Piece.WR] | Piece.Pieces_BB[Piece.WQ];
 
-                n = GenerateBlackPawnCapture(ply, n, targetBitBoard);
-                n = GenerateKnightMoves(ply, n, Piece.BN, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateKingMoves(ply, n, Piece.BK, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateBishopMoves(ply, n, Piece.BB, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateRookMoves(ply, n, Piece.BR, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
-                n = GenerateQueenMoves(ply, n, Piece.BQ, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateBlackPawnCapture(ply, n, targetBitBoard);
+                        n = GenerateKnightMoves(ply, n, Piece.BN, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateKingMoves(ply, n, Piece.BK, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateBishopMoves(ply, n, Piece.BB, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateRookMoves(ply, n, Piece.BR, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                        n = GenerateQueenMoves(ply, n, Piece.BQ, CommonDefs.MOVETYPE_CAPTURE, targetBitBoard);
+                    }
+                    break;
             }
+
+
+
 
             MOVES_AT_PLY[ply] = n;
             return n;
@@ -389,15 +399,21 @@ namespace HanselChessBOT.ConsoleApp
                     bool isF1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.f1)) > 0;
                     bool isG1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.g1)) > 0;
 
-                    // Check if e1, f1 and g1 are attacked.
-                    bool e1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
-                    bool f1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.f1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.f1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
-                    bool g1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.g1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.g1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
 
-                    if (isF1Empty && isG1Empty && !e1IsAttacked && !f1IsAttacked && !g1IsAttacked)
+                    if (isF1Empty && isG1Empty)
                     {
-                        moveList[ply][n].move = EncodeMove(Square.e1, Square.g1, CommonDefs.MOVETYPE_KING_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
-                        n++;
+                        // Check if e1, f1 and g1 are attacked.
+                        //bool e1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
+                        //bool f1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.f1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.f1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
+                        //bool g1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.g1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.g1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
+                        if (!LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK) &&
+                            !LegalMoveManager.IsSquareAttacked(Square.f1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.f1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK) &&
+                            !LegalMoveManager.IsSquareAttacked(Square.g1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.g1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK)
+                            )
+                        {
+                            moveList[ply][n].move = EncodeMove(Square.e1, Square.g1, CommonDefs.MOVETYPE_KING_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
+                            n++;
+                        }
                     }
 
 
@@ -409,15 +425,21 @@ namespace HanselChessBOT.ConsoleApp
                     bool isC1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.c1)) > 0;
                     bool isD1Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.d1)) > 0;
 
-                    // Check if e1, d1 and c1 are attacked.
-                    bool e1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
-                    bool d1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.d1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.d1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
-                    bool c1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.c1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.c1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
+                    //// Check if e1, d1 and c1 are attacked.
+                    //bool e1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
+                    //bool d1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.d1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.d1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
+                    //bool c1IsAttacked = LegalMoveManager.IsSquareAttacked(Square.c1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.c1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK);
 
-                    if (isB1Empty && isC1Empty && isD1Empty && !e1IsAttacked && !d1IsAttacked && !c1IsAttacked)
+                    if (isB1Empty && isC1Empty && isD1Empty)
                     {
-                        moveList[ply][n].move = EncodeMove(Square.e1, Square.c1, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
-                        n++;
+                        if (!LegalMoveManager.IsSquareAttacked(Square.e1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.e1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK) &&
+                           !LegalMoveManager.IsSquareAttacked(Square.d1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.d1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK) &&
+                           !LegalMoveManager.IsSquareAttacked(Square.c1, AttackMaps.WHITE_PAWN_ATTACK_MASK[Square.c1], Piece.BP, Piece.BN, Piece.BB, Piece.BR, Piece.BQ, Piece.BK)
+                           )
+                        {
+                            moveList[ply][n].move = EncodeMove(Square.e1, Square.c1, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.WK, Piece.NO_PIECE, Piece.NO_PIECE);
+                            n++;
+                        }
                     }
                 }
 
@@ -430,15 +452,21 @@ namespace HanselChessBOT.ConsoleApp
                     bool isF8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.f8)) > 0;
                     bool isG8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.g8)) > 0;
 
-                    // Check if e8, f8 and g8 are attacked.
-                    bool e8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
-                    bool f8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.f8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.f8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
-                    bool g8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.g8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.g8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
+                    //// Check if e8, f8 and g8 are attacked.
+                    //bool e8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
+                    //bool f8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.f8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.f8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
+                    //bool g8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.g8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.g8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
 
-                    if (isF8Empty && isG8Empty && !e8IsAttacked && !f8IsAttacked && !g8IsAttacked)
+                    if (isF8Empty && isG8Empty)
                     {
-                        moveList[ply][n].move = EncodeMove(Square.e8, Square.g8, CommonDefs.MOVETYPE_KING_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
-                        n++;
+                        if (!LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK) &&
+                           !LegalMoveManager.IsSquareAttacked(Square.f8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.f8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK) &&
+                           !LegalMoveManager.IsSquareAttacked(Square.g8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.g8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK)
+                           )
+                        {
+                            moveList[ply][n].move = EncodeMove(Square.e8, Square.f8, CommonDefs.MOVETYPE_KING_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
+                            n++;
+                        }
                     }
 
 
@@ -452,14 +480,26 @@ namespace HanselChessBOT.ConsoleApp
                     bool isD8Empty = (Piece.Pieces_BB[Piece.NO_PIECE] & (1UL << Square.d8)) > 0;
 
                     // Check if e8, d8 and c8 are attacked.
-                    bool e8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
-                    bool d8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.d8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.d8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
-                    bool c8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.c8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.c8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
+                    //bool e8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
+                    //bool d8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.d8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.d8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
+                    //bool c8IsAttacked = LegalMoveManager.IsSquareAttacked(Square.c8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.c8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK);
 
-                    if (isB8Empty && isC8Empty && isD8Empty && !e8IsAttacked && !d8IsAttacked && !c8IsAttacked)
+                    //if (isB8Empty && isC8Empty && isD8Empty && !e8IsAttacked && !d8IsAttacked && !c8IsAttacked)
+                    //{
+                    //    moveList[ply][n].move = EncodeMove(Square.e8, Square.c8, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
+                    //    n++;
+                    //}
+
+                    if (isB8Empty && isC8Empty && isD8Empty)
                     {
-                        moveList[ply][n].move = EncodeMove(Square.e8, Square.c8, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
-                        n++;
+                        if (!LegalMoveManager.IsSquareAttacked(Square.e8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.e8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK) &&
+                           !LegalMoveManager.IsSquareAttacked(Square.d8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.d8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK) &&
+                           !LegalMoveManager.IsSquareAttacked(Square.c8, AttackMaps.BLACK_PAWN_ATTACK_MASK[Square.c8], Piece.WP, Piece.WN, Piece.WB, Piece.WR, Piece.WQ, Piece.WK)
+                           )
+                        {
+                            moveList[ply][n].move = EncodeMove(Square.e8, Square.c8, CommonDefs.MOVETYPE_QUEEN_CASTLE, Piece.BK, Piece.NO_PIECE, Piece.NO_PIECE);
+                            n++;
+                        }
                     }
                 }
 
@@ -480,7 +520,7 @@ namespace HanselChessBOT.ConsoleApp
                 occupancy &= MagicGeneration.MagicNumbers.BishopAttacksInnerSixBits[from];
                 occupancy *= MagicGeneration.MagicNumbers.BishopMagicNumbers[from];
                 occupancy >>= MagicGeneration.MagicNumbers.BitsRequiredByBishop[from];
-                ulong moves = MagicGeneration.MagicNumbers.BishopAttacks[from, occupancy] & targetBitBoard;
+                ulong moves = MagicGeneration.MagicNumbers.BishopAttacks[from][occupancy] & targetBitBoard;
 
                 while (moves > 0)
                 {
@@ -491,6 +531,7 @@ namespace HanselChessBOT.ConsoleApp
                     moves = moves & moves - 1;
 
                 }
+
                 bb &= bb - 1;
 
             }
@@ -510,7 +551,7 @@ namespace HanselChessBOT.ConsoleApp
                 occupancy &= MagicGeneration.MagicNumbers.RookAttacksInnerSixBits[from];
                 occupancy *= MagicGeneration.MagicNumbers.RookMagicNumbers[from];
                 occupancy >>= MagicGeneration.MagicNumbers.BitsRequiredByRook[from];
-                ulong moves = MagicGeneration.MagicNumbers.RookAttacks[from, occupancy] & targetBitBoard;
+                ulong moves = MagicGeneration.MagicNumbers.RookAttacks[from][occupancy] & targetBitBoard;
 
                 while (moves > 0)
                 {
@@ -540,13 +581,13 @@ namespace HanselChessBOT.ConsoleApp
                 occupancyRook &= MagicGeneration.MagicNumbers.RookAttacksInnerSixBits[from];
                 occupancyRook *= MagicGeneration.MagicNumbers.RookMagicNumbers[from];
                 occupancyRook >>= MagicGeneration.MagicNumbers.BitsRequiredByRook[from];
-                ulong movesRook = MagicGeneration.MagicNumbers.RookAttacks[from, occupancyRook] & targetBitBoard;
+                ulong movesRook = MagicGeneration.MagicNumbers.RookAttacks[from][occupancyRook] & targetBitBoard;
 
                 ulong occupancyBishop = ~Piece.Pieces_BB[Piece.NO_PIECE];
                 occupancyBishop &= MagicGeneration.MagicNumbers.BishopAttacksInnerSixBits[from];
                 occupancyBishop *= MagicGeneration.MagicNumbers.BishopMagicNumbers[from];
                 occupancyBishop >>= MagicGeneration.MagicNumbers.BitsRequiredByBishop[from];
-                ulong movesBishop = MagicGeneration.MagicNumbers.BishopAttacks[from, occupancyBishop] & targetBitBoard;
+                ulong movesBishop = MagicGeneration.MagicNumbers.BishopAttacks[from][occupancyBishop] & targetBitBoard;
 
                 ulong movesQueen = movesRook | movesBishop;
 
@@ -971,28 +1012,6 @@ namespace HanselChessBOT.ConsoleApp
             return n;
         }
 
-        public ulong GetPinnedPieces(int piece, ulong opponentQueen, ulong opponentRook, ulong opponentBishop, ulong occupiedSquares)
-        {
-            int kingSq = Utilities.BitScanForward(Piece.Pieces_BB[piece]);
-            ulong result = 0UL;
-
-            ulong pinners = ((opponentRook | opponentQueen) & AttackMaps.ROOKS_ATTACK_MASK[kingSq]) | ((opponentBishop | opponentQueen) & AttackMaps.BISHOP_ATTACK_MASK[kingSq]);
-
-            while (pinners != 0)
-            {
-                int pinned = Utilities.BitScanForward(pinners);
-                ulong b = (CommonDefs.SquaresInBetweeen[kingSq, pinned]) & occupiedSquares;
-                if ((b != 0) && ((b & (b - 1)) == 0) && ((b & (opponentQueen | opponentRook | opponentBishop)) != 0))
-                {
-                    result |= b;
-                }
-
-                pinners &= pinners - 1;
-            }
-
-            return result;
-
-        }
     }
 }
 

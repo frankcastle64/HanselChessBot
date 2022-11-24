@@ -30,7 +30,7 @@
                     continue;
                 }
                 //IO.PrintMove(m.move);
-                nodes_divide = Divide(depth - 1, !turn, ref moveGen);
+                nodes_divide = Perft(depth - 1, !turn, ref moveGen);
                 nodes += nodes_divide;
                 //IO.PrintMoveWithNodes(m.move, nodes_divide);
                 moveGen.UndoMove(m.move, ply);
